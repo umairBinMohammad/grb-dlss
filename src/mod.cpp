@@ -2596,7 +2596,11 @@ static void MaskDevice(ID3D11Device* dev, D3D_FEATURE_LEVEL want, D3D_FEATURE_LE
 {
     if (!dev || !o_GetFeatureLevel)
         return;
-    D3D_FEATURE_LEVEL got = o_GetFeatureLevel(dev);
+    // Call through dev's own vtable, not o_GetFeatureLevel: that is the original from our temporary
+    // device's vtable, which under ReShade is ReShade's proxy device class. With OptiScaler in front of
+    // ReShade, d3d11 hands us raw (unwrapped) devices here, and calling the proxy method on one crashes.
+    // If dev does use the hooked vtable, Hk_GetFeatureLevel sees us as the caller and reports the real level.
+    D3D_FEATURE_LEVEL got = dev->GetFeatureLevel();
     if (got <= want)
         return;
     for (int i = 0; i < 8; i++)
@@ -2795,8 +2799,10 @@ void ModBootstrap()
         LOGE("Temporary D3D11 device creation failed 0x%08lX", hr);
         return;
     }
-    // The device vtable lives in d3d11.dll and is shared by every device; context vtables are
-    // per device on current Windows builds, so those are hooked when the game's device shows up.
+    // The device vtable is shared by every device of the same class: d3d11.dll's own, or a wrapper's
+    // proxy class when ReShade wraps devices (so only call these originals on objects that came through
+    // the vtable). Context vtables are per device on current Windows builds, so those are hooked when
+    // the game's device shows up.
     s_devVt = *(void***)dev;
     PatchSlot(s_devVt, kDev_CreatePixelShader, (void*)Hk_CreatePixelShader, (void**)&o_CreatePixelShader);
     PatchSlot(s_devVt, kDev_CreateDeferredContext, (void*)Hk_CreateDeferredContext, (void**)&o_CreateDeferredContext);
@@ -2812,7 +2818,13 @@ void ModBootstrap()
         if (!a && !b)
             HookGameImports();
     }
-    LOGI("Device vtable %p hooked (CreatePixelShader, CreateDeferredContext)", s_devVt);
+    HMODULE vtMod = nullptr;
+    char vtPath[MAX_PATH] = "?";
+    if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                           (LPCWSTR)s_devVt, &vtMod) &&
+        vtMod)
+        GetModuleFileNameA(vtMod, vtPath, MAX_PATH);
+    LOGI("Device vtable %p (%s) hooked (CreatePixelShader, CreateDeferredContext)", s_devVt, vtPath);
     ctx->Release();
     dev->Release();
 
