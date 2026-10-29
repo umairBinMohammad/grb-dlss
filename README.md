@@ -29,6 +29,7 @@ The game only ships temporal AA ("Temporal Injection"). This mod replaces that T
 
 To uninstall, delete `dinput8.dll`, `GRB_DLSS.ini`, `GRB_DLSS.log` and `nvngx_dlss.dll`.
 
+#
 > Breakpoint is an always-online game. The mod only touches rendering and does not change gameplay, but use it at your own risk, especially in PvP (Ghost War).
 
 ## Performance notes
