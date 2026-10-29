@@ -29,7 +29,13 @@ The game only ships temporal AA ("Temporal Injection"). This mod replaces that T
 
 To uninstall, delete `dinput8.dll`, `GRB_DLSS.ini`, `GRB_DLSS.log` and `nvngx_dlss.dll`.
 
-#
+### Using ReShade together with OptiScaler?
+
+v1.1 can crash at startup when **ReShade and OptiScaler are both installed** ([#1](../../issues/1)). A fix contributed by [@anaCS-26](https://github.com/anaCS-26) ([#2](../../pull/2)) is available as an **experimental build**: download `dinput8.dll` from the **[v1.2-experimental pre-release](../../releases/tag/v1.2-experimental)** (source: the [`experimental`](../../tree/experimental) branch) and use it instead of the v1.1 one.
+
+> **Untested by the maintainer.** It has been confirmed working by other users with ReShade + OptiScaler. If you don't use ReShade, stay on the latest release.
+
+
 > Breakpoint is an always-online game. The mod only touches rendering and does not change gameplay, but use it at your own risk, especially in PvP (Ghost War).
 
 ## Performance notes
