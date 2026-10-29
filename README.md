@@ -1,5 +1,7 @@
 # GRB-DLSS
 
+> **This is the `experimental` branch.** It contains changes that the maintainer hasn't tested in-game yet, currently the ReShade + OptiScaler startup fix from [#2](../../pull/2), which other users have confirmed works. For the tested build, use the [latest release](../../releases/latest).
+
 NVIDIA DLSS Super Resolution for **Tom Clancy's Ghost Recon Breakpoint** (DirectX 11).
 
 The game only ships temporal AA ("Temporal Injection"). This mod replaces that TAA pass with DLSS. It feeds DLSS the game's own low-resolution colour, depth, motion vectors and jitter, then writes the upscaled image back where the TAA output used to go. The rest of the frame (post-processing, UI) is untouched.
@@ -28,6 +30,13 @@ The game only ships temporal AA ("Temporal Injection"). This mod replaces that T
 4. Start the game, set Anti-Aliasing to TAA, and press **Home** for the menu.
 
 To uninstall, delete `dinput8.dll`, `GRB_DLSS.ini`, `GRB_DLSS.log` and `nvngx_dlss.dll`.
+
+### Using ReShade together with OptiScaler?
+
+v1.1 can crash at startup when **ReShade and OptiScaler are both installed** ([#1](../../issues/1)). A fix contributed by [@anaCS-26](https://github.com/anaCS-26) ([#2](../../pull/2)) is available as an **experimental build**: download `dinput8.dll` from the **[v1.2-experimental pre-release](../../releases/tag/v1.2-experimental)** (source: the [`experimental`](../../tree/experimental) branch) and use it instead of the v1.1 one.
+
+> **Untested by the maintainer.** It has been confirmed working by other users with ReShade + OptiScaler. If you don't use ReShade, stay on the latest release.
+
 
 > Breakpoint is an always-online game. The mod only touches rendering and does not change gameplay, but use it at your own risk, especially in PvP (Ghost War).
 
